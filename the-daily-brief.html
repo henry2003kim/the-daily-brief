@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Daily Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f2ed;--card:#fff;--hdr:#0d1b2a;--hdr2:#1a3a5c;--nav:#162032;--acc:#1059a0;--acc-l:#e8f0fb;--txt:#1a1a1a;--mute:#6b7280;--brd:#e2ded6;--grn:#1a6b3c;--grn-b:#e8f5ee;--red:#b91c1c;--red-b:#fef2f2;--wsj:#0047ab;--nyt:#c8001e;--blm:#f77f00;--sh:0 1px 4px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);--r:6px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;line-height:1.6;min-height:100vh}
+
+/* HEADER */
+#hdr{background:var(--hdr);color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.4)}
+.hdr-inner{display:flex;align-items:flex-end;justify-content:space-between;padding:18px 32px 12px;flex-wrap:wrap;gap:8px}
+.logo{font-family:'Playfair Display',serif;font-size:1.85rem;font-weight:700;color:#fff;letter-spacing:-.3px}
+.logo span{color:#5ba3e8}
+.tagline{font-size:.72rem;color:#8fa8c0;letter-spacing:.04em;text-transform:uppercase;margin-left:10px}
+.hdr-date{font-size:.8rem;color:#8fa8c0}
+nav{display:flex;padding:0 32px;border-top:1px solid #1f3650}
+.tab-btn{background:none;border:none;color:#8fa8c0;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;letter-spacing:.05em;text-transform:uppercase;padding:12px 20px;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s}
+.tab-btn:hover{color:#c8dff5}
+.tab-btn.active{color:#fff;border-bottom-color:#5ba3e8}
+
+/* LAYOUT */
+.panel{display:none;max-width:1120px;margin:0 auto;padding:28px 24px 60px}
+.panel.active{display:block}
+
+/* BRIEFING */
+.brf-hdr{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.brf-hdr h2{font-family:'Playfair Display',serif;font-size:1.3rem;flex:1}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;border:none;transition:all .18s;letter-spacing:.02em}
+.btn-p{background:var(--acc);color:#fff}
+.btn-p:hover{background:#0a4785}
+.btn-p:disabled{opacity:.55;cursor:not-allowed}
+.btn-g{background:#fff;color:var(--txt);border:1px solid var(--brd)}
+.btn-g:hover{background:var(--bg)}
+.btn-sm{padding:6px 14px;font-size:.75rem}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.pill{padding:5px 14px;border-radius:20px;font-size:.75rem;font-weight:500;cursor:pointer;border:1.5px solid var(--brd);background:#fff;color:var(--mute);transition:all .15s}
+.pill:hover{border-color:var(--acc);color:var(--acc)}
+.pill.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+
+/* ARTICLE CARDS */
+#art-wrap{display:flex;flex-direction:column;gap:10px}
+.acard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;transition:box-shadow .2s;box-shadow:var(--sh)}
+.acard:hover{box-shadow:0 4px 20px rgba(0,0,0,.12)}
+.ahdr{padding:16px 20px;cursor:pointer;display:flex;align-items:flex-start;gap:14px}
+.ameta{display:flex;gap:8px;align-items:center;flex-shrink:0;margin-top:2px;flex-direction:column}
+.sbadge{font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:3px;color:#fff;letter-spacing:.04em;white-space:nowrap}
+.bwsj{background:var(--wsj)}.bnyt{background:var(--nyt)}.bblm{background:var(--blm)}
+.cbadge{font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:3px;background:var(--acc-l);color:var(--acc);white-space:nowrap}
+.abody{flex:1}
+.ahead{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:600;line-height:1.4;margin-bottom:6px}
+.asnip{font-size:.83rem;color:var(--mute);line-height:1.55}
+.xico{color:var(--mute);font-size:1rem;transition:transform .25s;flex-shrink:0;margin-top:3px}
+.acard.open .xico{transform:rotate(180deg)}
+.adet{display:none;padding:0 20px 18px;border-top:1px solid var(--brd)}
+.acard.open .adet{display:block}
+.adet-in{padding-top:16px}
+.albl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--acc);margin-bottom:8px}
+.apara{font-size:.85rem;color:#374151;line-height:1.7;margin-bottom:12px}
+.alink{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;font-weight:600;color:var(--acc);text-decoration:none;margin-top:4px}
+.alink:hover{text-decoration:underline}
+
+/* SKELETON */
+@keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+.skel-card{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh)}
+.sk{border-radius:4px;background:linear-gradient(90deg,#e8e4dc 25%,#f0ece4 50%,#e8e4dc 75%);background-size:600px 100%;animation:shimmer 1.5s infinite;display:block}
+.sk-b{height:18px;width:48px;margin-bottom:10px}
+.sk-h{height:18px;margin-bottom:8px}
+.sk-p{height:13px;margin-bottom:6px}
+
+/* STATE BOX */
+.state{text-align:center;padding:64px 24px}
+.state-ico{font-size:2.8rem;margin-bottom:14px}
+.state-t{font-family:'Playfair Display',serif;font-size:1.15rem;margin-bottom:8px}
+.state-s{font-size:.85rem;color:var(--mute)}
+
+/* MARKETS */
+.mkt-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+.mkt-top h2{font-family:'Playfair Display',serif;font-size:1.3rem}
+.ts{font-size:.75rem;color:var(--mute)}
+.sec-t{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--mute);margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid var(--brd)}
+.msec{margin-bottom:36px}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.icard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh)}
+.itck{font-size:.72rem;font-weight:700;color:var(--mute);letter-spacing:.06em;margin-bottom:2px}
+.iprc{font-size:1.15rem;font-weight:700}
+.ichg{font-size:.78rem;font-weight:600;margin-top:3px}
+.iname{font-size:.68rem;color:var(--mute);margin-top:4px}
+.pos{color:var(--grn)}.neg{color:var(--red)}
+.wadd{display:flex;gap:8px;margin-bottom:14px}
+.wadd input{flex:1;max-width:180px;padding:8px 12px;border:1.5px solid var(--brd);border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.82rem;background:#fff;outline:none;text-transform:uppercase}
+.wadd input:focus{border-color:var(--acc)}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.wcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);position:relative}
+.wrm{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--mute);cursor:pointer;font-size:.9rem;line-height:1}
+.wrm:hover{color:var(--red)}
+.wmt{font-size:.83rem;color:var(--mute);padding:12px 0}
+.ns-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.nscard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh)}
+.ns-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.ns-tk{font-size:.82rem;font-weight:700}
+.ns-pr{text-align:right}
+.ns-p{font-size:.9rem;font-weight:700}
+.ns-c{font-size:.72rem;font-weight:600}
+.ns-rsn{font-size:.72rem;color:var(--mute);line-height:1.45}
+.ind-lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--acc);margin-bottom:8px}
+.ind-grp{margin-bottom:18px}
+
+/* ARCHIVE */
+.arch-lay{display:flex;gap:24px;align-items:flex-start}
+.arch-sb{width:220px;flex-shrink:0;background:var(--card);border:1px solid var(--brd);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.arch-sb-t{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--mute);padding:14px 16px 10px;border-bottom:1px solid var(--brd)}
+.arch-lst{max-height:600px;overflow-y:auto}
+.arch-it{padding:11px 16px;border-bottom:1px solid var(--brd);cursor:pointer;font-size:.82rem;color:var(--txt);display:flex;flex-direction:column;gap:2px;transition:background .15s}
+.arch-it:hover{background:var(--acc-l)}
+.arch-it.on{background:var(--acc);color:#fff}
+.arch-it.on .arch-cnt{color:#b0ccf0}
+.arch-dt{font-weight:600}
+.arch-cnt{font-size:.72rem;color:var(--mute)}
+.arch-con{flex:1;min-width:0}
+.arch-empty{font-size:.85rem;color:var(--mute);padding:40px 24px;text-align:center}
+
+/* SPINNER */
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:rot .6s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* FADE */
+.fi{animation:fi .35s ease forwards}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.hidden{display:none!important}
+@media(max-width:640px){
+  .hdr-inner{padding:14px 16px 10px;flex-direction:column}
+  nav{padding:0 16px}
+  .panel{padding:20px 16px 48px}
+  .arch-lay{flex-direction:column}
+  .arch-sb{width:100%}
+}
+</style>
+</head>
+<body>
+<!-- article data embedded as JSON — avoids all JS string quoting issues -->
+<script type="application/json" id="article-data">[{"id": 1, "source": "WSJ", "category": "Markets", "headline": "Fed Holds Rates Steady, Signals Patience as Inflation Gradually Eases", "snippet": "Federal Reserve officials voted unanimously to maintain the benchmark rate at its current range, citing the need for more evidence that inflation is sustainably moving toward its 2% target.", "analysis": ["The Federal Open Market Committee decision underscores a cautious posture that has defined monetary policy for much of the past two years. While consumer prices have retreated meaningfully from their 2022 peak, the so-called \"last mile\" of disinflation has proven stickier than officials anticipated, particularly in services sectors tied to shelter and wages.", "Markets had priced in roughly two cuts for 2026 heading into the meeting, but the Fed updated dot plot showed the median official now sees just one reduction this year. That recalibration pushed short-duration Treasury yields higher and briefly pressured equities before buyers returned in the afternoon session."], "url": "https://www.wsj.com/articles/fed-holds-rates-steady", "tickers": ["SPY", "TLT", "QQQ"], "stockReasons": {"TLT": "Treasury ETF moves inversely with rates; Fed hold pressures bond prices.", "SPY": "Broad market reacts to rate path recalibration.", "QQQ": "Rate-sensitive tech sector sensitive to Fed guidance."}}, {"id": 2, "source": "Bloomberg", "category": "Markets", "headline": "S&P 500 Posts Third Straight Weekly Gain on Strong Corporate Earnings", "snippet": "A broad rally lifted the S&P 500 to its third consecutive weekly advance, driven by better-than-expected earnings from major financial and industrial companies.", "analysis": ["First-quarter earnings season has surprised to the upside, with roughly 72% of S&P 500 companies reporting results that beat consensus estimates, according to FactSet data. The outperformance has been particularly notable among financials, where net interest margins have remained resilient despite growing expectations of eventual rate relief.", "Strategists note that the earnings upgrade cycle is broadening beyond the mega-cap technology names that drove most of the market gains in 2024 and 2025. Industrials, energy, and healthcare are all seeing positive earnings revisions — a development that historically correlates with sustained market rallies rather than narrow, sentiment-driven spikes."], "url": "https://www.bloomberg.com/news/sp500-weekly-gain", "tickers": ["SPY", "QQQ", "IWM"], "stockReasons": {"SPY": "Direct beneficiary of broad earnings beat cycle.", "IWM": "Small-cap rally signals broadening market participation.", "QQQ": "Tech holding gains as earnings diversify."}}, {"id": 3, "source": "Bloomberg", "category": "Markets", "headline": "Treasury Yields Climb as Economic Data Dims Rate-Cut Hopes", "snippet": "The 10-year Treasury yield touched its highest level since November after a batch of stronger-than-expected economic data prompted traders to scale back bets on Federal Reserve rate cuts.", "analysis": ["A hotter-than-expected jobs report, combined with resilient retail sales data, has forced a significant recalibration of rate expectations in the futures market. Traders had priced in nearly three Fed cuts by year-end heading into the week; that number has now been pared to fewer than two, according to CME FedWatch data.", "The move in yields has broad implications across asset classes. Higher for longer rates tend to compress valuations in long-duration equities, strengthen the dollar, and weigh on emerging market assets. Mortgage rates, which are closely tied to the 10-year Treasury, have also edged higher, adding fresh headwinds to an already tentative housing recovery."], "url": "https://www.bloomberg.com/news/treasury-yields-climb", "tickers": ["TLT", "SPY", "GLD"], "stockReasons": {"TLT": "Directly impacted; rising yields push bond prices lower.", "GLD": "Gold trades inversely with real rates; yield spike weighs on gold.", "SPY": "Higher yields pressure equity multiples broadly."}}, {"id": 4, "source": "WSJ", "category": "Markets", "headline": "Small-Cap Stocks Outperform as Investors Rotate from Mega-Cap Tech", "snippet": "The Russell 2000 surged nearly 2% on the week as investors shifted allocations from large-cap technology toward smaller domestic companies seen as beneficiaries of any eventual rate cuts.", "analysis": ["The rotation reflects growing conviction among portfolio managers that the concentration risk embedded in major indices has become too large to ignore. The top ten holdings of the S&P 500 now account for more than 35% of the index total market capitalization — a level that has historically preceded periods of mean reversion in favor of broader participation.", "Small-cap companies, which tend to carry higher proportions of floating-rate debt, would be direct beneficiaries of any Fed easing cycle. The near-term trade is also being driven by attractive relative valuations: the Russell 2000 trades at a roughly 20% discount to its historical price-to-earnings average relative to large caps, a gap that has caught the attention of value-oriented managers."], "url": "https://www.wsj.com/articles/small-cap-rotation", "tickers": ["IWM", "QQQ", "VTI"], "stockReasons": {"IWM": "Direct beneficiary of small-cap rotation trade.", "QQQ": "Selling pressure as funds rotate out of mega-cap tech.", "VTI": "Broad market gains as rotation broadens participation."}}, {"id": 5, "source": "NYT", "category": "Markets", "headline": "Volatility Index Falls to Multi-Year Low, Signaling Investor Complacency", "snippet": "The CBOE Volatility Index, or VIX, dropped to its lowest reading in nearly three years, a development that historically precedes periods of elevated market sensitivity to unexpected news.", "analysis": ["The compression of implied volatility is partly a structural phenomenon: the surge in options-selling strategies — particularly through covered call and buy-write ETFs — has created a persistent mechanical dampener on the VIX. These products have accumulated hundreds of billions in assets and systematically sell near-term options regardless of the macro backdrop, suppressing measures of expected volatility.", "Contrarian investors are watching closely. When the VIX has traded at these levels historically, markets have tended to exhibit a low-volatility trap dynamic in which successive small gains gradually entice leveraged investors into the market, leaving the system fragile to sudden dislocations. The trigger is rarely predicted in advance."], "url": "https://www.nytimes.com/2026/03/30/business/vix-low-volatility", "tickers": ["SPY", "QQQ", "VTI"], "stockReasons": {"SPY": "Low VIX reflects current equity complacency; historically a contrarian signal.", "VTI": "Total market exposure elevated as volatility selling continues.", "QQQ": "Tech-heavy index most exposed to sudden repricing events."}}, {"id": 6, "source": "WSJ", "category": "Geopolitics", "headline": "U.S. Widens Semiconductor Export Restrictions Targeting Advanced AI Chips", "snippet": "The Commerce Department announced a sweeping expansion of export controls that would bar shipment of the most advanced AI accelerator chips to a broader set of countries without prior government review.", "analysis": ["The new rules extend the existing diffusion rule framework that has governed chip exports since 2023, tightening restrictions on so-called Tier 2 countries and adding new licensing requirements for data center-scale deployments. The administration framed the move as a national security imperative, arguing that access to frontier AI compute could enable adversaries to develop autonomous weapons systems and advanced surveillance infrastructure.", "The semiconductor industry reacted with alarm. Shares of the major chip designers fell sharply in after-hours trading as analysts calculated the potential revenue impact from markets now subject to new licensing friction. Historically, export controls have been difficult to enforce completely, and industry lobbyists are expected to push aggressively for carveouts in sectors such as automotive and industrial manufacturing."], "url": "https://www.wsj.com/articles/chip-export-controls-expanded", "tickers": ["NVDA", "AMD", "INTC", "QCOM"], "stockReasons": {"NVDA": "Largest revenue exposure to restricted markets; direct regulatory risk.", "AMD": "Competing AI chip lineup faces same export barriers.", "INTC": "Manufacturing footprint in regulated regions adds complexity.", "QCOM": "Mobile and edge chips face incremental licensing requirements."}}, {"id": 7, "source": "NYT", "category": "Geopolitics", "headline": "G7 Leaders Endorse Common Framework for Artificial Intelligence Governance", "snippet": "Finance ministers and technology officials from the Group of Seven nations agreed on a set of voluntary guidelines for AI development, though critics noted the absence of binding enforcement mechanisms.", "analysis": ["The framework, developed over 18 months of negotiations, establishes shared principles around transparency, explainability, and human oversight of high-risk AI systems. Participating governments agreed to align domestic regulations where possible and to establish a cross-border incident reporting system for AI-related disruptions to critical infrastructure.", "The agreement is likely to have more symbolic than immediate practical significance — voluntary frameworks in technology have a mixed track record of driving corporate behavior. But industry observers note that the G7 coordination could accelerate the development of binding regulations in individual jurisdictions, particularly the European Union, where the AI Act already provides a legislative scaffold on which stricter measures could be built."], "url": "https://www.nytimes.com/2026/03/30/technology/g7-ai-framework", "tickers": ["MSFT", "GOOGL", "META", "AMZN"], "stockReasons": {"MSFT": "Significant AI infrastructure investment potentially subject to new governance rules.", "META": "Open-source AI model releases could face transparency requirements.", "GOOGL": "Cloud AI products face new cross-border reporting obligations.", "AMZN": "AWS AI services business sensitive to international regulatory alignment."}}, {"id": 8, "source": "Bloomberg", "category": "Geopolitics", "headline": "OPEC+ Delays Production Decision as Members Clash Over Quota Compliance", "snippet": "OPEC+ postponed a scheduled vote on production quotas after Saudi Arabia and Russia signaled frustration with member countries that have repeatedly exceeded their allotted output ceilings.", "analysis": ["The internal dispute reflects a structural tension within the cartel: countries with near-term fiscal pressures — Iraq, Kazakhstan, and the UAE — have repeatedly pumped above quota, eroding the collective discipline that has underpinned the alliance market management strategy. Saudi Arabia, which bears a disproportionate share of voluntary cuts, has grown increasingly vocal about its unwillingness to absorb free-rider behavior indefinitely.", "Oil markets initially spiked on the news before retracing as traders assessed the possibility of a broader supply release if the alliance fails to reach consensus. The price action underscores oil sensitivity to cartel cohesion: even the perception that OPEC+ could fracture has historically been sufficient to drive significant moves in crude benchmarks, with ripple effects across energy equities and inflation expectations."], "url": "https://www.bloomberg.com/news/opec-production-delay", "tickers": ["USO", "XOM", "CVX", "COP"], "stockReasons": {"USO": "Oil price ETF directly exposed to OPEC+ supply uncertainty.", "XOM": "Revenue sensitive to crude price volatility.", "CVX": "Upstream business margins tied to WTI and Brent benchmarks.", "COP": "Independent producer with high oil price leverage."}}, {"id": 9, "source": "NYT", "category": "Geopolitics", "headline": "NATO Allies Agree to Expanded Cybersecurity Cooperation Amid Growing Threat Landscape", "snippet": "NATO defense ministers signed a new digital defense charter committing member states to share threat intelligence in real time and coordinate responses to state-sponsored cyberattacks on critical infrastructure.", "analysis": ["The agreement codifies practices that have evolved informally over the past several years, particularly following high-profile incidents targeting European energy grids and financial clearinghouses. The charter creates a joint Cyber Operations Center with round-the-clock monitoring capability and a rapid-response unit that can be deployed across member nations within 48 hours.", "Private sector cybersecurity firms stand to benefit substantially from the initiative. The charter requires member governments to raise minimum security standards for operators of critical infrastructure, many of which remain underprepared by current assessments. Defense contractors with significant cybersecurity divisions are expected to compete for implementation contracts totaling several billion dollars across the alliance."], "url": "https://www.nytimes.com/2026/03/30/world/nato-cyber-charter", "tickers": ["CRWD", "PANW", "RTX", "LMT"], "stockReasons": {"CRWD": "Government cybersecurity contracts align directly with NATO initiative.", "PANW": "Endpoint and network security demand rises with infrastructure mandates.", "RTX": "Defense division well-positioned for allied cybersecurity contracts.", "LMT": "Integrated defense systems business benefits from cyber expansion."}}, {"id": 10, "source": "Bloomberg", "category": "Economy", "headline": "U.S. Consumer Confidence Rises to 18-Month High in March Survey", "snippet": "The Conference Board consumer confidence index jumped more than expected in March, reaching its highest reading since September 2024, as households grew more optimistic about current job conditions and future income.", "analysis": ["The confidence data add to a run of constructive signals about the health of the American consumer. Wage growth, while moderating from its post-pandemic peak, continues to outpace inflation in most sectors, sustaining real purchasing power. Credit card delinquency rates, a leading indicator of consumer stress, remain elevated but have stabilized after rising steadily through 2025.", "Economists caution that confidence surveys can be volatile and that the gap between sentiment and actual spending has widened in recent cycles. Consumers have repeatedly expressed more pessimism in surveys than their behavior at the checkout counter would suggest — a divergence that has frustrated analysts attempting to forecast consumption trends using traditional models."], "url": "https://www.bloomberg.com/news/consumer-confidence-march", "tickers": ["WMT", "COST", "TGT", "HD"], "stockReasons": {"WMT": "Consumer spending strength directly boosts retail revenue outlook.", "COST": "Membership warehouse model benefits from confident, higher-income shoppers.", "TGT": "Discretionary recovery lifts Target after prolonged inventory normalization.", "HD": "Home improvement spending correlates with consumer income confidence."}}, {"id": 11, "source": "WSJ", "category": "Economy", "headline": "Weekly Jobless Claims Fall to Six-Month Low, Reinforcing Labor Market Resilience", "snippet": "Initial unemployment claims dropped to 198,000 last week, the lowest reading since October, suggesting the labor market remains broadly healthy despite scattered tech-sector layoffs.", "analysis": ["The claims data arrived ahead of the nonfarm payroll report, which economists expect to show a net addition of roughly 185,000 jobs in March. While that pace would represent a modest deceleration from last year monthly average, it remains comfortably above the breakeven level needed to keep the unemployment rate stable.", "Beneath the headline figures, there are signs of bifurcation. High-skill technology and financial services roles have seen elevated separations, while construction, healthcare, and hospitality continue to add workers at a healthy clip. This uneven pattern complicates the assessment of monetary policy, as it can simultaneously fuel inflation in certain services segments while moderating aggregate demand in others."], "url": "https://www.wsj.com/articles/jobless-claims-fall", "tickers": ["SPY", "JPM", "BAC"], "stockReasons": {"SPY": "Strong labor market underpins corporate earnings and consumer spending.", "JPM": "Employment health reduces credit loss provisions.", "BAC": "Retail banking benefits from employed, spending consumers."}}, {"id": 12, "source": "WSJ", "category": "Economy", "headline": "Core PCE Inflation Cools to 2.7%, Keeping Fed Rate Path Uncertain", "snippet": "The Federal Reserve preferred inflation gauge slowed to a 2.7% annual rate in February, edging closer to the central bank 2% target but still leaving policymakers divided on when to begin cutting rates.", "analysis": ["The Personal Consumption Expenditures price index, stripped of food and energy components, has now decelerated for three consecutive months — a pattern that Fed officials have described as encouraging but insufficient to warrant imminent policy easing. The stickiness is concentrated in housing-related services, a category that Fed models suggest should continue to normalize through the balance of the year.", "Bond markets are watching the data closely. Each incremental step toward 2% inflation tends to shorten estimates of the first cut date, pulling yields lower and broadly supporting risk assets. Conversely, any re-acceleration — particularly if driven by goods prices, which had provided relief through 2024 — could reignite fears of a prolonged higher-for-longer episode and trigger a significant repricing across duration-sensitive assets."], "url": "https://www.wsj.com/articles/pce-inflation-february", "tickers": ["TLT", "SPY", "GLD"], "stockReasons": {"TLT": "Inflation trajectory directly drives Fed rate expectations and bond yields.", "GLD": "Gold is a classic inflation hedge; cooling PCE moderates gold demand.", "SPY": "Lower inflation expectations support equity multiple expansion."}}, {"id": 13, "source": "Bloomberg", "category": "Economy", "headline": "Retail Sales Beat Forecasts, Defying Pressure from Higher Borrowing Costs", "snippet": "U.S. retail sales rose 0.6% in February, beating the 0.3% consensus forecast, with gains spread across electronics, sporting goods, and food services — a sign that consumer spending remains a pillar of economic growth.", "analysis": ["The retail data provide fresh evidence that the consumer sector has been more resilient than many economists predicted given the cumulative impact of the rate hike cycle. The savings rate has declined from its post-pandemic peak, but wealth effects from elevated equity and housing markets appear to be supporting discretionary spending, particularly among upper-income households.", "The gap between how consumers feel and how they actually spend has continued to confound forecasters. Companies in the retail and consumer staples sectors have reported broadly stable volumes, even as surveys show elevated consumer anxiety about inflation and the cost of living. The divergence may reflect methodological limitations in sentiment surveys as much as any real economic phenomenon."], "url": "https://www.bloomberg.com/news/retail-sales-february", "tickers": ["WMT", "AMZN", "COST", "TGT"], "stockReasons": {"WMT": "Sales beat translates directly to higher foot traffic and e-commerce volumes.", "AMZN": "Online retail gains from strong consumer electronics category.", "COST": "Bulk purchases track closely with overall retail trends.", "TGT": "Discretionary categories showing recovery in monthly data."}}, {"id": 14, "source": "NYT", "category": "Economy", "headline": "Housing Market Shows Early Recovery Signs as Mortgage Rates Ease From Peaks", "snippet": "Pending home sales rose for the second consecutive month in February as mortgage rates retreated from their 2025 highs, offering a tentative signal that the frozen housing market may finally be thawing.", "analysis": ["The housing market has been in a state of near-paralysis for much of the past two years, as the combination of high mortgage rates and limited inventory created a standoff between would-be buyers and sellers reluctant to give up their sub-3% pandemic-era mortgages. The lock-in effect has kept existing home sales near their lowest levels in decades, constraining mobility and contributing to broader economic inefficiency.", "A modest decline in mortgage rates — the 30-year fixed has eased from a peak above 7.8% to around 6.8% — appears to be enough to unlock some pent-up demand. Industry data suggest that first-time buyers are returning to the market with particular urgency, driven by demographic tailwinds from the large millennial cohort now entering prime homebuying years. New construction continues to serve as a partial release valve, though builder costs remain elevated."], "url": "https://www.nytimes.com/2026/03/30/business/housing-market-recovery", "tickers": ["DHI", "LEN", "HD", "LOW"], "stockReasons": {"DHI": "D.R. Horton is the largest homebuilder; benefits directly from housing recovery.", "LEN": "Lennar profits from rising pending sales in key markets.", "HD": "Home improvement spending rises with housing turnover.", "LOW": "Lowe renovation demand picks up alongside housing activity."}}, {"id": 15, "source": "WSJ", "category": "Trade", "headline": "New Tariff Schedule Takes Effect, Targeting Strategic Imports in Key Sectors", "snippet": "A new round of tariffs on strategic goods including steel, solar panels, and electric vehicle components officially took effect Monday, drawing retaliatory threats from trading partners.", "analysis": ["The tariffs apply rates of 25% to 50% on goods identified as strategically sensitive, covering approximately $180 billion in annual import value. The administration argued the measures are necessary to support domestic manufacturing and reduce reliance on foreign supply chains for critical goods, framing the action as a matter of economic security rather than protectionism.", "The economic effects are complex and unevenly distributed. Domestic producers in the targeted industries stand to benefit from reduced foreign competition, but downstream manufacturers that rely on these inputs face higher costs. Economists at major banks have trimmed their U.S. growth forecasts modestly while raising near-term inflation projections — a classic stagflationary dynamic that complicates the central bank calculus."], "url": "https://www.wsj.com/articles/new-tariffs-take-effect", "tickers": ["X", "NUE", "FSLR", "F"], "stockReasons": {"X": "U.S. Steel benefits directly from steel import protection.", "NUE": "Nucor domestic steel production gains from reduced foreign competition.", "FSLR": "First Solar faces panel input cost changes from solar tariff structure.", "F": "Ford faces higher EV component costs from tariff schedule."}}, {"id": 16, "source": "NYT", "category": "Trade", "headline": "U.S. and EU Resume Free Trade Talks After Two-Year Pause", "snippet": "Trade representatives from Washington and Brussels held their first formal negotiating session in over two years, reviving long-stalled talks over a bilateral trade and investment agreement.", "analysis": ["The talks had been effectively frozen since the previous administration deprioritized the initiative, with both sides unable to bridge differences over agricultural market access and European digital services regulations. The restart reflects a recalibration of transatlantic economic strategy, driven in part by shared concerns about China growing trade presence and the need to coordinate on emerging technology supply chains.", "Analysts expect any agreement to be narrowly scoped in its initial phase, focusing on areas of existing alignment such as industrial goods and services rather than the politically contentious agriculture and data sectors. Even a limited accord would carry symbolic significance, potentially serving as a template for broader engagement with other allied economies."], "url": "https://www.nytimes.com/2026/03/30/business/us-eu-trade-talks-resume", "tickers": ["BA", "CAT", "DE", "MMM"], "stockReasons": {"BA": "Boeing commercial aircraft faces EU import duties; talks could ease barriers.", "CAT": "Caterpillar heavy equipment exports benefit from reduced EU tariff friction.", "DE": "Deere agricultural equipment gains if agricultural market access improves.", "MMM": "Industrial conglomerate with significant EU revenue exposure."}}, {"id": 17, "source": "Bloomberg", "category": "Trade", "headline": "Apple Accelerates Supply Chain Diversification as India Output Surges", "snippet": "Apple has now shifted roughly 15% of global iPhone production to India, with company insiders indicating plans to reach 25% within two years, in a significant expansion beyond historical reliance on Chinese manufacturing.", "analysis": ["The shift is being driven by a combination of geopolitical risk management and cost optimization. Apple contract manufacturers — principally Foxconn and Tata Electronics — have invested heavily in Indian production facilities, supported by generous state subsidies. The results have exceeded initial targets, with Indian factories now producing higher-end models including the iPhone 16 Pro.", "The diversification comes with real costs and growing pains. Indian production still lags Chinese facilities on yield rates and logistical efficiency, though the gap is narrowing with each product cycle. Apple suppliers in China, many of which have built their businesses around the company demands, face an existential strategic question — a pressure that is contributing to their own diversification efforts into Southeast Asia and Mexico."], "url": "https://www.bloomberg.com/news/apple-india-production-surge", "tickers": ["AAPL", "QCOM", "AVGO"], "stockReasons": {"AAPL": "Diversification reduces China geopolitical risk premium in the stock.", "QCOM": "Mobile chip supply chains increasingly tied to India production ramp.", "AVGO": "Semiconductor components for iPhone track with production geography."}}, {"id": 18, "source": "Bloomberg", "category": "Trade", "headline": "Container Shipping Rates Rise for Fifth Straight Week on Port Congestion", "snippet": "The Freightos Baltic Index rose another 4% this week as congestion at major Asian ports continued to disrupt cargo flows, raising fears of a repeat of the supply chain disruptions from 2021 and 2022.", "analysis": ["The congestion is being caused by a confluence of factors: a surge in front-loaded consumer goods orders ahead of anticipated tariffs, weather-related disruptions in the South China Sea, and ongoing rerouting of vessels away from the Red Sea. The combination has created significant scheduling backlogs at Shanghai, Ningbo, and Busan, with vessels waiting up to ten days for berths.", "The shipping rate spike is a potential early warning signal for goods inflation, which had been a significant disinflationary force over the past two years as supply chains normalized. If elevated shipping costs persist into the spring, they could begin showing up in U.S. import prices data within six to eight weeks, complicating the Fed already delicate inflation assessment."], "url": "https://www.bloomberg.com/news/shipping-rates-rise-congestion", "tickers": ["ZIM", "MATX", "UPS", "FDX"], "stockReasons": {"ZIM": "Israeli container shipper directly benefits from higher spot rates.", "MATX": "Matson domestic shipping margins improve with broader rate cycle.", "UPS": "Input cost pressures from higher freight rates weigh on margins.", "FDX": "FedEx freight segment faces elevated sea shipping competition costs."}}, {"id": 19, "source": "Bloomberg", "category": "Energy", "headline": "Crude Oil Steadies Near $80 as OPEC+ Weighs Output Increase", "snippet": "WTI crude hovered near $80 per barrel after OPEC+ sources indicated the alliance is internally debating a modest production increase at its next formal meeting.", "analysis": ["Oil has traded in a relatively narrow band of $75 to $85 for much of the first quarter, as supply management by OPEC+ has broadly offset softer-than-expected demand from China and Europe. Any production increase — even a modest one of 100,000 to 200,000 barrels per day — would likely test that floor, particularly if global economic momentum continues to moderate.", "The demand picture remains the more consequential variable for oil directional move in the second half of the year. A Chinese economic reacceleration, driven by government stimulus measures, could absorb incremental OPEC+ supply without materially pressuring prices. Conversely, a slowdown in U.S. consumer spending — currently the most robust demand center globally — could expose the market to a more meaningful correction toward the $70 range."], "url": "https://www.bloomberg.com/news/crude-opec-output-debate", "tickers": ["USO", "XOM", "CVX", "COP"], "stockReasons": {"USO": "Oil price ETF most directly exposed to crude benchmark movements.", "XOM": "Upstream revenue highly sensitive to WTI price band.", "CVX": "Integrated operations partially hedge but upstream drives earnings.", "COP": "Independent exploration-focused; highest oil price leverage."}}, {"id": 20, "source": "NYT", "category": "Energy", "headline": "Renewable Energy Investment Hits Record High in First Quarter 2026", "snippet": "Global investment in renewable energy projects reached a new quarterly record in the first three months of 2026, driven by accelerating solar deployments in Asia and a surge in offshore wind commitments in Europe.", "analysis": ["The record-setting pace reflects a fundamental shift in the economics of clean energy. Solar costs have fallen by more than 90% over the past decade, pushing the technology to cost parity with natural gas — and in many markets, below it — without subsidies. The result is a self-sustaining build cycle that no longer depends on policy incentives alone, though incentive programs continue to accelerate deployment timelines.", "The investment data also highlight a growing geographic divergence. China accounts for the plurality of global clean energy investment and continues to export solar panels and battery systems at prices that Western manufacturers struggle to match. The tension between the economic benefits of cheap clean energy hardware and the desire to develop domestic clean energy industries is at the heart of ongoing trade disputes and industrial policy debates."], "url": "https://www.nytimes.com/2026/03/30/climate/renewable-investment-record", "tickers": ["FSLR", "ENPH", "NEE", "BEP"], "stockReasons": {"FSLR": "First Solar is a primary domestic beneficiary of solar deployment boom.", "ENPH": "Enphase microinverters essential infrastructure for residential solar growth.", "NEE": "NextEra is the largest renewable energy producer by capacity.", "BEP": "Brookfield Renewable Partners benefits from accelerating global clean energy buildout."}}, {"id": 21, "source": "WSJ", "category": "Energy", "headline": "U.S. LNG Exports Reach Record High as European Demand Stays Elevated", "snippet": "American liquefied natural gas exports hit an all-time monthly record in February, with flows to Europe accounting for more than 65% of total shipments as the continent continues to diversify away from Russian pipeline gas.", "analysis": ["The export surge reflects the structural reconfiguration of global gas markets that began with Russia invasion of Ukraine in 2022. Europe has largely succeeded in replacing Russian pipeline gas with alternatives — primarily LNG from the U.S. and Qatar — though at significantly higher prices that have contributed to persistent industrial energy cost disadvantages relative to American competitors.", "U.S. LNG export capacity is set to expand significantly over the next three years as several large liquefaction terminals along the Gulf Coast complete construction. The buildout will further entrench American gas as a global swing supplier, giving U.S. producers pricing influence that extends well beyond domestic markets. Environmental advocates continue to argue that locking in long-term LNG infrastructure commitments conflicts with Paris Agreement carbon reduction pathways."], "url": "https://www.wsj.com/articles/lng-exports-record", "tickers": ["LNG", "COP", "GLNG"], "stockReasons": {"LNG": "Cheniere Energy is the dominant U.S. LNG exporter; direct volume beneficiary.", "COP": "ConocoPhillips supplies gas feedstock for key export terminals.", "GLNG": "Golar LNG floating export infrastructure in high utilization period."}}, {"id": 22, "source": "Bloomberg", "category": "Finance", "headline": "Goldman Sachs Raises S&P 500 Year-End Target to 6,200 on Earnings Strength", "snippet": "Goldman Sachs equity strategists lifted their year-end S&P 500 target by 200 points to 6,200, citing upward revisions to corporate earnings estimates and a more stable macroeconomic backdrop.", "analysis": ["The upgrade reflects growing conviction that the earnings cycle has legs beyond the technology sector. Goldman analysts raised their 2026 earnings-per-share estimate for the S&P 500 to $268, implying roughly 10% growth — a level that, if achieved, would represent the second consecutive year of double-digit earnings expansion and could justify current valuations at roughly 23 times forward earnings.", "Not all strategists share the optimism. Several large-bank research teams continue to warn that the combination of elevated multiples, concentrated positioning in mega-cap technology, and a higher-for-longer interest rate environment creates a fragile setup in which the margin for disappointment is slim. The divergence between the most bullish and most bearish year-end targets on Wall Street now spans over 1,000 S&P 500 points — an unusually wide range that reflects genuine uncertainty about the macro path ahead."], "url": "https://www.bloomberg.com/news/goldman-sp500-target-raised", "tickers": ["GS", "SPY", "QQQ"], "stockReasons": {"GS": "Goldman itself benefits from elevated market activity and deal flow.", "SPY": "S&P 500 ETF directly tied to Goldman revised upside target.", "QQQ": "Earnings upgrade cycle heavy in technology names."}}, {"id": 23, "source": "WSJ", "category": "Finance", "headline": "Private Credit Market Surpasses $2 Trillion, Challenging Traditional Bank Lending", "snippet": "The global private credit market has now grown beyond $2 trillion in assets under management, transforming from a niche alternative strategy into a systemic component of corporate finance.", "analysis": ["The explosive growth of private credit — primarily direct lending to mid-sized companies that bypass traditional bank loans — reflects a structural shift in financial intermediation underway since the 2008 global financial crisis. Regulatory constraints on bank leverage have permanently reduced the appetite of regulated lenders for leveraged corporate debt, creating a vacuum that alternative asset managers have eagerly filled.", "Regulators are watching with growing unease. The Financial Stability Board and the IMF have both flagged private credit as a potential source of systemic risk, warning that the opacity of the market and the complexity of interconnections between private credit funds, their banking counterparties, and institutional investors could amplify shocks. A significant credit event in the sector could test infrastructure that has never been stress-tested at scale."], "url": "https://www.wsj.com/articles/private-credit-two-trillion", "tickers": ["BX", "APO", "ARES", "KKR"], "stockReasons": {"BX": "Blackstone is the largest alternative asset manager globally; core private credit business.", "APO": "Apollo Global leads private credit origination at scale.", "ARES": "Ares Management is the largest dedicated private credit firm by AUM.", "KKR": "KKR credit business has grown substantially alongside overall alternatives expansion."}}, {"id": 24, "source": "Bloomberg", "category": "Finance", "headline": "JPMorgan Leads Banking Sector with Blowout Q1 Earnings on Resilient Net Interest Income", "snippet": "JPMorgan Chase reported first-quarter earnings that beat consensus estimates by 18%, driven by stronger-than-expected net interest income and a surge in investment banking fees as deal activity recovers.", "analysis": ["The results validate the long-standing argument that scale advantages in banking are compounding in the current environment. JPMorgan has taken market share across multiple business lines — from consumer deposits to trading — and its balance sheet size allows it to offer pricing and service breadth that regional competitors struggle to match. The investment banking recovery stands out: advisory fees were up 35% year-over-year as M&A volumes rebounded.", "The concern hanging over even strong bank earnings is interest rate sensitivity. Net interest income, which has been the primary driver of sector profitability over the past two years, is expected to moderate as the Fed eventually eases and deposit repricing headwinds increase. Banks have been building loan loss reserves in anticipation of a potential credit cycle — a prudent but earnings-dilutive step that analysts are watching closely as the consumer credit market shows mixed signals."], "url": "https://www.bloomberg.com/news/jpmorgan-q1-earnings-beat", "tickers": ["JPM", "GS", "BAC", "MS", "C"], "stockReasons": {"JPM": "Blowout earnings drives sector re-rating and JPM outperformance.", "GS": "Investment banking recovery benefits Goldman advisory business.", "BAC": "Large consumer bank faces similar NII tailwinds and headwinds.", "MS": "Wealth management and IB recovery mirrors JPM beat.", "C": "Citigroup restructuring story set against same sector tailwinds."}}, {"id": 25, "source": "NYT", "category": "Finance", "headline": "Cryptocurrency Market Cap Crosses $3.5 Trillion on Institutional Inflows", "snippet": "The total market capitalization of cryptocurrencies surpassed $3.5 trillion for the first time, driven by institutional allocations following the launch of new spot Bitcoin and Ethereum ETF products.", "analysis": ["The institutionalization of cryptocurrency markets has been the defining development of the past 18 months. The launch of spot Bitcoin ETFs in early 2024 opened the door to pension funds, endowments, and registered investment advisors who previously faced regulatory or fiduciary barriers to direct crypto exposure. The new ETF wrapper has channeled hundreds of billions in new capital into the asset class.", "Whether the institutionalization represents a maturation of the asset class or simply a new mechanism for concentrated risk-taking remains genuinely contested. Proponents argue that institutional demand smooths volatility and provides a stable marginal buyer for dips. Critics note that the correlation between crypto and risk assets more broadly has increased with institutional adoption — suggesting that in a broad risk-off environment, crypto may no longer provide the diversification benefits that once formed part of its investment thesis."], "url": "https://www.nytimes.com/2026/03/30/technology/crypto-market-cap", "tickers": ["COIN", "MSTR", "IBIT"], "stockReasons": {"COIN": "Coinbase is the primary regulated U.S. crypto exchange; volume up with market cap.", "MSTR": "MicroStrategy holds large Bitcoin treasury; price-leveraged instrument.", "IBIT": "BlackRock spot Bitcoin ETF sees record inflows during institutional adoption wave."}}]</script>
+
+<div id="app">
+  <header id="hdr">
+    <div class="hdr-inner">
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <h1 class="logo">The Daily <span>Brief</span></h1>
+        <span class="tagline">Financial Intelligence</span>
+      </div>
+      <span class="hdr-date" id="hdr-date"></span>
+    </div>
+    <nav>
+      <button class="tab-btn active" data-tab="briefing">Today&#39;s Briefing</button>
+      <button class="tab-btn" data-tab="markets">Markets</button>
+      <button class="tab-btn" data-tab="archive">Archive</button>
+    </nav>
+  </header>
+
+  <!-- BRIEFING -->
+  <section id="tab-briefing" class="panel active">
+    <div class="brf-hdr">
+      <h2>Today&#39;s Top Stories</h2>
+      <button class="btn btn-p" id="btn-gen">
+        <span id="gen-lbl">&#10022; Generate Briefing</span>
+      </button>
+      <button class="btn btn-g btn-sm hidden" id="btn-ref">&#8635; Refresh</button>
+    </div>
+    <div class="pills" id="pills"></div>
+    <div id="art-wrap">
+      <div class="state">
+        <div class="state-ico">&#128240;</div>
+        <div class="state-t">Your briefing awaits</div>
+        <div class="state-s">Click &ldquo;Generate Briefing&rdquo; to load today&#39;s top 10 stories from WSJ, NYT &amp; Bloomberg.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARKETS -->
+  <section id="tab-markets" class="panel">
+    <div class="mkt-top">
+      <h2>Markets Overview</h2>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="ts" id="mkt-ts"></span>
+        <button class="btn btn-g btn-sm" id="btn-mkt-ref">&#8635; Refresh Prices</button>
+      </div>
+    </div>
+    <div class="msec">
+      <div class="sec-t">Major Indices &amp; ETFs</div>
+      <div class="igrid" id="igrid"></div>
+    </div>
+    <div class="msec">
+      <div class="sec-t">Watchlist &mdash; Pinned Stocks (up to 5)</div>
+      <div class="wadd">
+        <input type="text" id="w-input" placeholder="Add ticker&hellip;" maxlength="8">
+        <button class="btn btn-p btn-sm" id="btn-wadd">+ Add</button>
+      </div>
+      <div class="wgrid" id="wgrid"><span class="wmt">No tickers pinned yet. Add up to 5 symbols above.</span></div>
+    </div>
+    <div class="msec">
+      <div class="sec-t">Stocks Impacted by Today&#39;s News</div>
+      <div id="ns-wrap"><span class="wmt">Generate a briefing first to surface stocks tied to today&#39;s headlines.</span></div>
+    </div>
+  </section>
+
+  <!-- ARCHIVE -->
+  <section id="tab-archive" class="panel">
+    <div class="arch-lay">
+      <aside class="arch-sb">
+        <div class="arch-sb-t">Past Editions</div>
+        <div class="arch-lst" id="arch-lst"><div class="arch-empty">No past editions yet.</div></div>
+      </aside>
+      <div class="arch-con" id="arch-con">
+        <div class="state">
+          <div class="state-ico">&#128193;</div>
+          <div class="state-t">No edition selected</div>
+          <div class="state-s">Click a date in the sidebar to load that edition&#39;s articles.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+// ── Load article pool from embedded JSON ────────────────────────────
+const ARTICLE_POOL = JSON.parse(document.getElementById('article-data').textContent);
+
+// ── Config ──────────────────────────────────────────────────────────
+const CATS = ['Markets','Geopolitics','Economy','Trade','Energy','Finance'];
+const MAX_ARC = 30;
+const MKT_CACHE = 15*60*1000;
+
+// ── ETF / Stock base prices ─────────────────────────────────────────
+const ETF_BASE = {
+  SPY:{n:'SPDR S&P 500 ETF',p:576.40},QQQ:{n:'Invesco QQQ (Nasdaq-100)',p:498.82},
+  DIA:{n:'SPDR Dow Jones ETF',p:444.15},IWM:{n:'iShares Russell 2000',p:218.74},
+  VTI:{n:'Vanguard Total Market',p:265.33},GLD:{n:'SPDR Gold Shares',p:236.91},
+  TLT:{n:'iShares 20+ Yr Treasury',p:90.18},USO:{n:'United States Oil Fund',p:78.55}
+};
+const STOCK_BASE = {
+  NVDA:127.40,MSFT:398.25,AAPL:231.18,META:554.62,AMZN:225.80,
+  JPM:268.35,GS:551.90,BAC:42.74,MS:118.60,C:65.20,
+  XOM:118.80,CVX:162.45,COP:118.22,LNG:178.90,GLNG:28.40,
+  FSLR:182.35,ENPH:68.45,NEE:74.18,BEP:26.40,
+  WMT:97.30,COST:934.80,TGT:131.50,HD:375.20,LOW:238.80,AMZN:225.80,
+  BX:142.80,APO:158.20,ARES:156.75,KKR:138.90,
+  COIN:248.60,MSTR:344.20,IBIT:38.20,
+  CRWD:382.50,PANW:186.40,RTX:122.80,LMT:456.70,
+  AMD:118.30,INTC:24.85,QCOM:158.40,AVGO:215.60,GOOGL:178.90,
+  DHI:148.20,LEN:162.50,
+  X:38.40,NUE:142.60,F:12.80,
+  ZIM:14.80,MATX:122.40,UPS:118.60,FDX:232.80,
+  BA:184.50,CAT:358.20,DE:442.30,MMM:118.60,GE:184.20,
+  TSLA:282.50
+};
+
+// ── State ────────────────────────────────────────────────────────────
+const S = {articles:[],cat:'All',prices:{},lastFetch:0,watchlist:[],arcKey:null};
+
+// ── Storage ──────────────────────────────────────────────────────────
+const Store = {
+  get(k,fb){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+};
+
+// ── Seeded RNG ────────────────────────────────────────────────────────
+function sRng(seed){
+  let s=seed;
+  return function(){s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/4294967296;};
+}
+
+// ── Market prices ────────────────────────────────────────────────────
+function genPrices(force){
+  const now=Date.now();
+  if(!force&&S.lastFetch&&(now-S.lastFetch<MKT_CACHE)&&Object.keys(S.prices).length) return;
+  const seed=Math.floor(now/MKT_CACHE)+(force?Math.random()*999999|0:0);
+  const rng=sRng(seed);
+  // ETFs
+  for(const[t,d] of Object.entries(ETF_BASE)){
+    const c=(rng()-.5)*d.p*0.024;
+    S.prices[t]={price:+(d.p+c).toFixed(2),chg:+c.toFixed(2),pct:+(c/d.p*100).toFixed(2)};
+  }
+  // Stocks
+  for(const[t,base] of Object.entries(STOCK_BASE)){
+    const c=(rng()-.5)*base*0.024;
+    S.prices[t]={price:+(base+c).toFixed(2),chg:+c.toFixed(2),pct:+(c/base*100).toFixed(2)};
+  }
+  S.lastFetch=now;
+}
+function gp(t){return S.prices[t]||{price:0,chg:0,pct:0};}
+
+// ── Pick articles ─────────────────────────────────────────────────────
+function pickArticles(){
+  const seed=Math.floor(Date.now()/60000);
+  const rng=sRng(seed);
+  const pool=[...ARTICLE_POOL].sort(()=>rng()-.5);
+  const byCat={};
+  for(const c of CATS) byCat[c]=pool.filter(a=>a.category===c);
+  const sel=[];
+  let i=0;
+  while(sel.length<10&&i<CATS.length*6){
+    const c=CATS[i%CATS.length];
+    const avail=byCat[c].filter(a=>!sel.includes(a));
+    if(avail.length) sel.push(avail[0]);
+    i++;
+  }
+  for(const a of pool){if(sel.length>=10) break;if(!sel.includes(a)) sel.push(a);}
+  return sel.slice(0,10);
+}
+
+// ── Archive ───────────────────────────────────────────────────────────
+const Arc={
+  load(){return Store.get('tdb_arc',{});},
+  save(arts){
+    const all=this.load();
+    const k=todayK();
+    all[k]={date:k,articles:arts,ts:Date.now()};
+    const keys=Object.keys(all).sort().reverse();
+    if(keys.length>MAX_ARC) keys.slice(MAX_ARC).forEach(k=>delete all[k]);
+    Store.set('tdb_arc',all);
+  },
+  list(){const all=this.load();return Object.keys(all).sort().reverse().map(k=>all[k]);}
+};
+function todayK(){return new Date().toISOString().slice(0,10);}
+function fmtDate(iso){
+  if(!iso) return '';
+  const[y,m,d]=iso.split('-');
+  const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return mo[+m-1]+' '+(+d)+', '+y;
+}
+
+// ── Render helpers ────────────────────────────────────────────────────
+function sbCls(src){return src==='WSJ'?'bwsj':src==='NYT'?'bnyt':'bblm';}
+function fmtChg(c,p){const s=c>=0?'+':'';return s+c.toFixed(2)+' ('+s+p.toFixed(2)+'%)';}
+function clsCls(c){return c>=0?'pos':'neg';}
+
+function skels(n){
+  return Array.from({length:n},()=>`
+    <div class="skel-card">
+      <div style="display:flex;gap:10px">
+        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+          <span class="sk sk-b"></span><span class="sk sk-b" style="width:64px"></span>
+        </div>
+        <div style="flex:1">
+          <div class="sk sk-h" style="width:85%"></div>
+          <div class="sk sk-h" style="width:70%"></div>
+          <div class="sk sk-p" style="width:90%;margin-top:8px"></div>
+          <div class="sk sk-p" style="width:75%"></div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function aCardHTML(a,i){
+  const delay=i*55;
+  return `<div class="acard fi" style="animation-delay:${delay}ms" data-id="${a.id}">
+    <div class="ahdr" onclick="tog(${a.id})">
+      <div class="ameta">
+        <span class="sbadge ${sbCls(a.source)}">${a.source}</span>
+        <span class="cbadge">${a.category}</span>
+      </div>
+      <div class="abody">
+        <div class="ahead">${a.headline}</div>
+        <div class="asnip">${a.snippet}</div>
+      </div>
+      <span class="xico">&#9662;</span>
+    </div>
+    <div class="adet">
+      <div class="adet-in">
+        <div class="albl">Analysis</div>
+        <p class="apara">${a.analysis[0]}</p>
+        <p class="apara">${a.analysis[1]}</p>
+        <a class="alink" href="${a.url}" target="_blank" rel="noopener">Read full article &#8599;</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+function tog(id){
+  const c=document.querySelector('.acard[data-id="'+id+'"]');
+  if(c) c.classList.toggle('open');
+}
+
+function renderArts(arts){
+  const w=document.getElementById('art-wrap');
+  if(!arts.length){
+    w.innerHTML='<div class="state"><div class="state-ico">&#128269;</div><div class="state-t">No articles match this filter</div><div class="state-s">Try a different category.</div></div>';
+    return;
+  }
+  w.innerHTML=arts.map((a,i)=>aCardHTML(a,i)).join('');
+}
+function filtered(){return S.cat==='All'?S.articles:S.articles.filter(a=>a.category===S.cat);}
+
+function renderPills(){
+  const p=document.getElementById('pills');
+  p.innerHTML=['All',...CATS].map(c=>`<button class="pill ${S.cat===c?'on':''}" onclick="setCat('${c}')">${c}</button>`).join('');
+}
+function setCat(c){S.cat=c;renderPills();renderArts(filtered());}
+
+// ── Markets rendering ─────────────────────────────────────────────────
+function renderIndices(){
+  document.getElementById('igrid').innerHTML=Object.entries(ETF_BASE).map(([t,d])=>{
+    const p=gp(t);const cls=clsCls(p.chg);
+    return `<div class="icard"><div class="itck">${t}</div><div class="iprc">$${p.price.toFixed(2)}</div><div class="ichg ${cls}">${fmtChg(p.chg,p.pct)}</div><div class="iname">${d.n}</div></div>`;
+  }).join('');
+}
+
+function renderWatch(){
+  const g=document.getElementById('wgrid');
+  if(!S.watchlist.length){g.innerHTML='<span class="wmt">No tickers pinned yet. Add up to 5 symbols above.</span>';return;}
+  g.innerHTML=S.watchlist.map(t=>{
+    const p=gp(t);const cls=clsCls(p.chg);
+    return `<div class="wcard"><button class="wrm" onclick="rmWatch('${t}')" title="Remove">&#10005;</button><div class="itck">${t}</div><div class="iprc">$${p.price>0?p.price.toFixed(2):'—'}</div>${p.price>0?`<div class="ichg ${cls}">${fmtChg(p.chg,p.pct)}</div>`:''}</div>`;
+  }).join('');
+}
+
+function renderNewsStocks(){
+  const wrap=document.getElementById('ns-wrap');
+  if(!S.articles.length){wrap.innerHTML='<span class="wmt">Generate a briefing first to surface stocks tied to today\'s headlines.</span>';return;}
+  const tm={};
+  for(const a of S.articles){
+    if(!a.tickers) continue;
+    for(const t of a.tickers){
+      if(!tm[t]){
+        const rsn=(a.stockReasons&&a.stockReasons[t])||('Featured in: '+a.headline.slice(0,55)+'...');
+        tm[t]={rsn,cat:a.category};
+      }
+    }
+  }
+  const cm={};
+  for(const[t,info] of Object.entries(tm)){
+    if(!cm[info.cat]) cm[info.cat]=[];
+    cm[info.cat].push({t,...info});
+  }
+  wrap.innerHTML=Object.entries(cm).map(([cat,stocks])=>`
+    <div class="ind-grp">
+      <div class="ind-lbl">${cat}</div>
+      <div class="ns-grid">${stocks.map(s=>{
+        const p=gp(s.t);const cls=clsCls(p.chg);
+        return `<div class="nscard"><div class="ns-top"><span class="ns-tk">${s.t}</span><div class="ns-pr"><div class="ns-p">$${p.price>0?p.price.toFixed(2):'—'}</div>${p.price>0?`<div class="ns-c ${cls}">${fmtChg(p.chg,p.pct)}</div>`:''}</div></div><div class="ns-rsn">${s.rsn}</div></div>`;
+      }).join('')}</div>
+    </div>`).join('');
+}
+
+function updateTS(){
+  const el=document.getElementById('mkt-ts');
+  if(!S.lastFetch){el.textContent='';return;}
+  const d=new Date(S.lastFetch);
+  el.textContent='Last updated '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+}
+
+function rmWatch(t){S.watchlist=S.watchlist.filter(x=>x!==t);Store.set('tdb_wl',S.watchlist);renderWatch();}
+
+function addWatch(){
+  const inp=document.getElementById('w-input');
+  const t=inp.value.trim().toUpperCase().replace(/[^A-Z0-9.]/g,'');
+  if(!t) return;
+  if(S.watchlist.length>=5){toast('Watchlist full — remove a ticker first.');return;}
+  if(S.watchlist.includes(t)){toast(t+' already in watchlist.');return;}
+  // Ensure price exists
+  if(!S.prices[t]){
+    const base=50+Math.random()*250;
+    STOCK_BASE[t]=+base.toFixed(2);
+    const c=(Math.random()-.5)*base*0.024;
+    S.prices[t]={price:+(base+c).toFixed(2),chg:+c.toFixed(2),pct:+(c/base*100).toFixed(2)};
+  }
+  S.watchlist.push(t);Store.set('tdb_wl',S.watchlist);inp.value='';renderWatch();
+}
+
+// ── Archive rendering ─────────────────────────────────────────────────
+function renderArcSB(){
+  const lst=document.getElementById('arch-lst');
+  const eds=Arc.list();
+  if(!eds.length){lst.innerHTML='<div class="arch-empty">No past editions yet.</div>';return;}
+  lst.innerHTML=eds.map(e=>`<div class="arch-it ${S.arcKey===e.date?'on':''}" onclick="loadArc('${e.date}')"><span class="arch-dt">${fmtDate(e.date)}</span><span class="arch-cnt">${e.articles.length} stories</span></div>`).join('');
+}
+
+function renderArcCon(arts,date){
+  const c=document.getElementById('arch-con');
+  if(!arts||!arts.length){c.innerHTML='<div class="arch-empty">No articles found for this edition.</div>';return;}
+  c.innerHTML=`<div style="margin-bottom:18px"><h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:4px">${fmtDate(date)}</h3><p style="font-size:.78rem;color:var(--mute)">${arts.length} stories</p></div><div style="display:flex;flex-direction:column;gap:10px">${arts.map((a,i)=>aCardHTML(a,i)).join('')}</div>`;
+}
+
+function loadArc(date){
+  S.arcKey=date;
+  const all=Arc.load();
+  const ed=all[date];
+  renderArcSB();
+  if(ed) renderArcCon(ed.articles,date);
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────
+function toast(msg){
+  let el=document.getElementById('toast-el');
+  if(!el){el=document.createElement('div');el.id='toast-el';
+    Object.assign(el.style,{position:'fixed',bottom:'24px',right:'24px',background:'#1a1a2e',color:'#fff',padding:'10px 18px',borderRadius:'6px',fontSize:'.82rem',zIndex:'9999',boxShadow:'0 4px 16px rgba(0,0,0,.3)',transition:'opacity .3s'});
+    document.body.appendChild(el);
+  }
+  el.textContent=msg;el.style.opacity='1';clearTimeout(el._t);el._t=setTimeout(()=>{el.style.opacity='0';},2800);
+}
+
+// ── Generate briefing ─────────────────────────────────────────────────
+async function gen(){
+  const btn=document.getElementById('btn-gen');
+  const lbl=document.getElementById('gen-lbl');
+  const ref=document.getElementById('btn-ref');
+  const wrap=document.getElementById('art-wrap');
+  btn.disabled=true;
+  lbl.innerHTML='<span class="spin"></span> Loading&hellip;';
+  wrap.innerHTML=skels(10);
+  // Small deliberate delay for UX (no network call — always resolves fast)
+  await new Promise(r=>setTimeout(r,850+Math.random()*350));
+  try{
+    S.articles=pickArticles();
+    S.cat='All';
+    renderPills();
+    renderArts(filtered());
+    Arc.save(S.articles);
+    renderArcSB();
+    renderNewsStocks();
+    ref.classList.remove('hidden');
+  }catch(e){
+    wrap.innerHTML='<div class="state"><div class="state-ico">&#9888;&#65039;</div><div class="state-t">Something went wrong</div><div class="state-s">Please try again.</div></div>';
+  }finally{
+    btn.disabled=false;
+    lbl.innerHTML='&#10022; Generate Briefing';
+  }
+}
+
+// ── Market refresh ────────────────────────────────────────────────────
+async function refMkt(force){
+  const btn=document.getElementById('btn-mkt-ref');
+  btn.disabled=true;btn.textContent='Refreshing\u2026';
+  await new Promise(r=>setTimeout(r,500));
+  genPrices(force||false);
+  renderIndices();renderWatch();renderNewsStocks();updateTS();
+  btn.disabled=false;btn.textContent='\u21bb Refresh Prices';
+}
+
+// ── Tab switch ────────────────────────────────────────────────────────
+function switchTab(t){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('[data-tab="'+t+'"]').classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
+  if(t==='markets'){genPrices();renderIndices();renderWatch();renderNewsStocks();updateTS();}
+  else if(t==='archive') renderArcSB();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+function init(){
+  document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  S.watchlist=Store.get('tdb_wl',[]);
+  renderPills();
+  document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+  document.getElementById('btn-gen').addEventListener('click',gen);
+  document.getElementById('btn-ref').addEventListener('click',gen);
+  document.getElementById('btn-mkt-ref').addEventListener('click',()=>refMkt(true));
+  document.getElementById('btn-wadd').addEventListener('click',addWatch);
+  document.getElementById('w-input').addEventListener('keydown',e=>{if(e.key==='Enter') addWatch();});
+  genPrices();
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
